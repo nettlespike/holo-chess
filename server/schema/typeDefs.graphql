@@ -1,0 +1,62 @@
+type User {
+    id: Int!
+    username: String!
+    isBoard: Boolean!
+}
+
+type Request {
+    id: Int!
+    sender: User!
+    reciever: User!
+    senderIsWhite: Boolean!
+    status: String! # PENDING, REJECTED, ACCEPETED, CANCELLED
+    gameId: Int
+}
+
+type Piece {
+    piece: String!
+    isWhite: Boolean!
+    # E.G. E4
+    letterCoordinate: String!
+    numberCoordinate: Int!
+}
+
+input PieceInput {
+    piece: String!
+    isWhite: Boolean!
+    letterCoordinate: String!
+    numberCoordinate: Int!
+}
+
+type Date {
+    unixTime: Int!
+}
+
+type Game {
+    id: Int!
+    state: String! # PLAYING, CHECKMATE, STALEMATE, TIMEOUT
+    whiteWins: Boolean
+    whiteUser: User!
+    blackUser: User!
+    isWhiteTurn: Boolean!
+    pieces: [Piece!]!
+}
+
+type Query {
+    usernameIsValid(username: String!): Boolean!
+    login(username: String!, password: String!): String! # JWT
+    viewUsers: [User!]! # JWT implied in header
+    viewRecievedRequests: [Request!]! # JWT implied in header
+    viewSentRequests: [Request!]! # JWT implied in header
+    getActiveGameId: Int! # JWT implied in header
+    getGameStatus: Game! # JWT Implied, return the game if in game
+}
+
+type Mutation {
+    register(username: String!, password: String!, isBoard: Boolean!): Boolean!
+    sendRequest(friendId: Int!, senderIsWhite: Boolean!): Boolean! # JWT implied
+    acceptRequest(requestId: Int!): Boolean! # JWT Implied
+    deferRequest(requestId: Int!): Boolean! # JWT Implied
+    cancelRequest(requestId: Int!): Boolean! # JWT Implied
+    move(pieceToMove: PieceInput!, newPiece: PieceInput!): Boolean! # JWT Implied 
+}
